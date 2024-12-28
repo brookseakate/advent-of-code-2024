@@ -11,15 +11,18 @@ import (
 func Day3() {
 	//fmt.Printf(">>>>>TOTAL: %v", parseInputToMulListAndCalculateSum("day3/sample"))
 	//fmt.Printf(">>>>>TOTAL: %v", parseInputToMulListAndCalculateSum("day3/sampleIgnorableCases"))
-	fmt.Printf(">>>>>TOTAL: %v", parseInputToMulListAndCalculateSum("day3/input"))
+	fmt.Printf(">>>>>TOTAL: %v", parseInputToMulListAndCalculateSum("day3/sample2"))
+	//fmt.Printf(">>>>>TOTAL: %v", parseInputToMulListAndCalculateSum("day3/input"))
 }
 
 func parseInputToMulListAndCalculateSum(filepath string) int {
 	inputLines := util.ReadInputFileToStringSlice(filepath)
-
 	inputString := strings.Join(inputLines, "")
+
+	enabledInputString := trimDisabled(inputString)
+
 	re := regexp.MustCompile(`mul\((\d+),(\d+)\)`)
-	mulStringSubmatches := re.FindAllStringSubmatch(inputString, -1)
+	mulStringSubmatches := re.FindAllStringSubmatch(enabledInputString, -1)
 	//fmt.Println("%v\n", mulStringSubmatches)
 
 	fmt.Printf("mul count: %v\n", len(mulStringSubmatches))
@@ -31,4 +34,14 @@ func parseInputToMulListAndCalculateSum(filepath string) int {
 		sum += left * right
 	}
 	return sum
+}
+
+func trimDisabled(rawMulString string) string {
+	// first wrap in starting + ending instructions
+	wrappedMulString := "do()" + rawMulString + "don't()"
+
+	// then capture substrings between do's & don't's
+	re := regexp.MustCompile(`do\(\).+don't\(\)`)
+	enabledMulSubmatches := re.FindAllString(wrappedMulString, -1)
+	return strings.Join(enabledMulSubmatches, "")
 }
