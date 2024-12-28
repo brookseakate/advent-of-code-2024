@@ -18,9 +18,12 @@ func Day1() {
 	slices.Sort(leftList)
 	slices.Sort(rightList)
 
-	total, _ := calculateTotalDistance(leftList, rightList)
+	totalDistance, _ := calculateTotalDistance(leftList, rightList)
 
-	println(">>>>>TOTAL: %v", total)
+	totalSimilarity := calculateTotalSimilarityScore(leftList, rightList)
+
+	println(">>>>>TOTAL DISTANCE: %v", totalDistance)
+	println(">>>>>TOTAL SIMILARITY: %v", totalSimilarity)
 }
 
 func splitInputLinesToIntLists(lines []string) ([]int, []int) {
@@ -35,6 +38,7 @@ func splitInputLinesToIntLists(lines []string) ([]int, []int) {
 	return left, right
 }
 
+// Part 1
 func calculateTotalDistance(leftList []int, rightList []int) (int, error) {
 	if len(leftList) != len(rightList) {
 		return -1, fmt.Errorf("something went wrong, leftList len != rightList len")
@@ -45,4 +49,19 @@ func calculateTotalDistance(leftList []int, rightList []int) (int, error) {
 		total += math.Abs(float64(rightList[i]) - float64(leftList[i]))
 	}
 	return int(total), nil
+}
+
+// Part 2
+func calculateTotalSimilarityScore(leftList []int, rightList []int) int {
+	total := 0
+	for _, leftNum := range leftList {
+		rightCount := util.CountInSlice(
+			rightList,
+			func(x int) bool {
+				return x == leftNum
+			},
+		)
+		total += leftNum * rightCount
+	}
+	return total
 }
