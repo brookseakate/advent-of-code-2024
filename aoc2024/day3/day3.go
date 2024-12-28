@@ -11,8 +11,8 @@ import (
 func Day3() {
 	//fmt.Printf(">>>>>TOTAL: %v", parseInputToMulListAndCalculateSum("day3/sample"))
 	//fmt.Printf(">>>>>TOTAL: %v", parseInputToMulListAndCalculateSum("day3/sampleIgnorableCases"))
-	fmt.Printf(">>>>>TOTAL: %v", parseInputToMulListAndCalculateSum("day3/sample2"))
-	//fmt.Printf(">>>>>TOTAL: %v", parseInputToMulListAndCalculateSum("day3/input"))
+	//fmt.Printf(">>>>>TOTAL: %v", parseInputToMulListAndCalculateSum("day3/sample2"))
+	fmt.Printf(">>>>>TOTAL: %v", parseInputToMulListAndCalculateSum("day3/input"))
 }
 
 func parseInputToMulListAndCalculateSum(filepath string) int {
@@ -40,8 +40,13 @@ func trimDisabled(rawMulString string) string {
 	// first wrap in starting + ending instructions
 	wrappedMulString := "do()" + rawMulString + "don't()"
 
-	// then capture substrings between do's & don't's
-	re := regexp.MustCompile(`do\(\).+don't\(\)`)
-	enabledMulSubmatches := re.FindAllString(wrappedMulString, -1)
-	return strings.Join(enabledMulSubmatches, "")
+	// then split at dos & don'ts, dropping don't -> do
+	splitAtDos := strings.Split(wrappedMulString, "do()")
+	var enabledStrings []string
+	for _, s := range splitAtDos {
+		enabledString := strings.Split(s, "don't()")[0]
+		enabledStrings = append(enabledStrings, enabledString)
+	}
+
+	return strings.Join(enabledStrings, "")
 }
