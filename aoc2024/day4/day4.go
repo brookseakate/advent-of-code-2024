@@ -3,15 +3,77 @@ package day4
 import (
 	"aoc2024/util"
 	"fmt"
+	"strings"
 )
 
 func Day4() {
 	//inputLines := util.ReadInputFileToStringSlice("day4/sample")
 	inputLines := util.ReadInputFileToStringSlice("day4/input")
 
-	fmt.Printf(">>>>TOTAL: %v", countXmasesInMatrix(inputLines))
+	//fmt.Printf(">>>>TOTAL: %v", countXmasesInMatrix(inputLines))
+	fmt.Printf(">>>>TOTAL: %v", countXdashMasesInMatrix(inputLines))
 }
 
+// part 2
+func countXdashMasesInMatrix(matrix []string) int {
+	count := 0
+	masString := "MAS"
+
+	// iterate only [1:-1] x & y ranges to avoid OOB
+	for li := 1; li < len(matrix)-1; li++ {
+		line := matrix[li]
+		for ci := 1; ci < len(line)-1; ci++ {
+			char := line[ci]
+			if string(char) == "A" { // only search if we found an "A"
+				negativeSlopeMatch := searchNegativeSlope(matrix, masString, li, ci) || searchNegativeSlope(matrix, reverseString(masString), li, ci)
+				positiveSlopeMatch := searchPositiveSlope(matrix, masString, li, ci) || searchPositiveSlope(matrix, reverseString(masString), li, ci)
+				if negativeSlopeMatch && positiveSlopeMatch {
+					//fmt.Printf("Found an XMAS! A at %v, %v\n", li, ci)
+					count++
+				}
+			}
+		}
+	}
+	return count
+}
+
+func reverseString(s string) string {
+	var reversedBuilder strings.Builder
+	for i := len(s) - 1; i >= 0; i-- {
+		reversedBuilder.WriteByte(s[i])
+	}
+	return reversedBuilder.String()
+}
+
+func searchNegativeSlope(matrix []string, matchString string, x int, y int) bool {
+	// OOB already guarded at call site
+
+	// hard-code since only checking 2 chars/runes
+	if matchString[0] != matrix[x-1][y-1] {
+		return false
+	}
+	if matchString[2] != matrix[x+1][y+1] {
+		return false
+	}
+
+	return true
+}
+
+func searchPositiveSlope(matrix []string, matchString string, x int, y int) bool {
+	// OOB already guarded at call site
+
+	// hard-code since only checking 2 chars/runes
+	if matchString[0] != matrix[x+1][y-1] {
+		return false
+	}
+	if matchString[2] != matrix[x-1][y+1] {
+		return false
+	}
+
+	return true
+}
+
+// part 1
 func countXmasesInMatrix(matrix []string) int {
 	matchString := "XMAS"
 	count := 0
@@ -63,8 +125,8 @@ func rightSearchContains(matrix []string, matchString string, x int, y int) bool
 		return false
 	}
 
-	for mi, mchar := range matchString {
-		if string(matrix[x][y+mi]) != string(mchar) {
+	for mi, mrune := range matchString {
+		if string(matrix[x][y+mi]) != string(mrune) {
 			return false
 		}
 	}
@@ -77,8 +139,8 @@ func downRightSearchContains(matrix []string, matchString string, x int, y int) 
 		return false
 	}
 
-	for mi, mchar := range matchString {
-		if string(matrix[x+mi][y+mi]) != string(mchar) {
+	for mi, mrune := range matchString {
+		if string(matrix[x+mi][y+mi]) != string(mrune) {
 			return false
 		}
 	}
@@ -91,8 +153,8 @@ func downSearchContains(matrix []string, matchString string, x int, y int) bool 
 		return false
 	}
 
-	for mi, mchar := range matchString {
-		if string(matrix[x+mi][y]) != string(mchar) {
+	for mi, mrune := range matchString {
+		if string(matrix[x+mi][y]) != string(mrune) {
 			return false
 		}
 	}
@@ -105,8 +167,8 @@ func downLeftSearchContains(matrix []string, matchString string, x int, y int) b
 		return false
 	}
 
-	for mi, mchar := range matchString {
-		if string(matrix[x+mi][y-mi]) != string(mchar) {
+	for mi, mrune := range matchString {
+		if string(matrix[x+mi][y-mi]) != string(mrune) {
 			return false
 		}
 	}
@@ -119,8 +181,8 @@ func leftSearchContains(matrix []string, matchString string, x int, y int) bool 
 		return false
 	}
 
-	for mi, mchar := range matchString {
-		if string(matrix[x][y-mi]) != string(mchar) {
+	for mi, mrune := range matchString {
+		if string(matrix[x][y-mi]) != string(mrune) {
 			return false
 		}
 	}
@@ -132,8 +194,8 @@ func upLeftSearchContains(matrix []string, matchString string, x int, y int) boo
 		return false
 	}
 
-	for mi, mchar := range matchString {
-		if string(matrix[x-mi][y-mi]) != string(mchar) {
+	for mi, mrune := range matchString {
+		if string(matrix[x-mi][y-mi]) != string(mrune) {
 			return false
 		}
 	}
@@ -146,8 +208,8 @@ func upSearchContains(matrix []string, matchString string, x int, y int) bool {
 		return false
 	}
 
-	for mi, mchar := range matchString {
-		if string(matrix[x-mi][y]) != string(mchar) {
+	for mi, mrune := range matchString {
+		if string(matrix[x-mi][y]) != string(mrune) {
 			return false
 		}
 	}
@@ -160,8 +222,8 @@ func upRightSearchContains(matrix []string, matchString string, x int, y int) bo
 		return false
 	}
 
-	for mi, mchar := range matchString {
-		if string(matrix[x-mi][y+mi]) != string(mchar) {
+	for mi, mrune := range matchString {
+		if string(matrix[x-mi][y+mi]) != string(mrune) {
 			return false
 		}
 	}
